@@ -1,0 +1,35 @@
+{
+  "name": "Injecta",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Injecting stuff",
+  "homepage_url": "http://www.ynet.com",
+  "background": {
+    "scripts": [
+      "./src/lib/jquery-3.5.1.min.js",
+      "./background.js"
+    ],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_title": "Inject!"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "./src/lib/jquery-3.5.1.min.js",
+        "./src/inject.js"
+      ],
+      "matches": [
+        "*://www.ynet.co.il/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "https://*/*",
+    "http://*/*",
+    "tabs",
+    "activeTab",
+    "<all_urls>"
+  ]
+}
