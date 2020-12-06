@@ -1,23 +1,25 @@
 {
-  "name": "Injecta",
+  "name": "FlySwatterTech",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "Injecting stuff",
-  "homepage_url": "http://www.ynet.com",
+  "description": "Automatically close all annoying popups, such as 'Allow Cookies' requests, newsletter forms, popup promos, popup ads, top/bottom banners, etc. Runs on page load. After several seconds, all popups are enabled. Just don't click anything in the first few seconds. To disable this plugin for the domain you're on, click the fly in the bottom right corner.",
+  "homepage_url": "https://FlySwatter.tech",
+  "web_accessible_resources" : [
+    "src/images/flyswatter-on.svg",
+    "src/images/flyswatter-off.svg"
+  ],
   "background": {
     "scripts": [
-      "./src/lib/jquery-3.5.1.min.js",
       "./background.js"
     ],
     "persistent": true
   },
   "browser_action": {
-    "default_title": "Inject!"
+    "default_title": "No Cookies / Popups / Notifications - FlySwatter.tech"
   },
   "content_scripts": [
     {
       "js": [
-        "./src/lib/jquery-3.5.1.min.js",
         "./src/inject.js"
       ],
       "matches": [
