@@ -4,6 +4,8 @@ To a world where you can browse the web without being pestered by annoying popup
 
 No more "accept our cookies", "would you allow cookies?", "accept our terms and privacy policy", "sign up for our newsletter" in your face. I just want to get to the website content, without clicking and closing things first. Every site. It is so annoying. You're probably used to it. Anyway, it probably still contributes to subconscious frustration and makes you tired from browsing the web. It doesn't have to be like that.
 
+### 👇 Examples: please scroll down below 👇
+
 I'm working on this browser extension, currently only for Chrome. If you'd like to contribute, please, let's get in touch!
 
 # To install
@@ -12,6 +14,11 @@ Coming to Chrome store soon. For now, please install manually.
 
 1. Download this entire Github folder. (Big green button "Code" above, then "Download ZIP")
 2. ![install to chrome://extensions](examples/installation.png)
+
+
+# To turn it off for a particular website/domain
+
+A little "fly and swatter" icon is added to the bottom left corner of your browser window. Click this to turn off the extension. Click it again to turn it back on. Etc.
 
 
 # Examples
@@ -43,7 +50,3 @@ After:
 ![redhat.com after](examples/redhat-after.png)
 
 <hr />
-
-# To turn it off for a particular website/domain
-
-Notice the little "fly and swatter" icon was added to the bottom left corner of your browser window. Click this to turn off the extension. Click it again to turn it back on. Etc.
