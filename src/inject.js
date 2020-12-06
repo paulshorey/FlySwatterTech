@@ -2,7 +2,7 @@
  * NOTES:
  * - do not hide full-width full-height overlays - instead, find the "x" button and click on it
  */
-let DEBUG1 = false;// which stuff to hide/show
+let DEBUG1 = true;// which stuff to hide/show
 let DEBUG2 = false; // localStorage/indexDB
 let DEBUG3 = true; // buttons inside cookie banner
 // this is the code which will be injected into a given page...
@@ -50,12 +50,6 @@ let DEBUG3 = true; // buttons inside cookie banner
    * LIB
    */
   if (DEBUG1) console.clear()
-  const removeAA = function(el, because=''){
-    //
-    if (DEBUG1) console.warn('REMOVE '+el._css.position, because ? 'because '+because : '', [el.id, el.className, el.style.display, el.innerText])
-    if (DEBUG1) console.log(el);
-    el.remove()
-  }
   const hideAA = function(el, because='', force=false){
     // allow if it seems useful
     if (!force) {
@@ -64,7 +58,7 @@ let DEBUG3 = true; // buttons inside cookie banner
       }
     }
     // remove
-    if (DEBUG1) console.warn('HIDE '+el._css.position, because ? 'because '+because : '', [el.id, el.className, el.style.display, el.innerText])
+    if (DEBUG1) console.error('HIDE '+el._css.position, because ? 'because '+because : '', [el.id, el.className, el.style.display, el.innerText])
     if (DEBUG1) console.log(el);
     el.style.setProperty('display', 'none', 'important')
     el.style.setProperty('opacity', '0', 'important')
@@ -73,7 +67,7 @@ let DEBUG3 = true; // buttons inside cookie banner
   }
   const invisibleAA = function(el, because=''){
     //
-    if (DEBUG1) console.warn('INVISIBLE '+el._css.position, because ? 'because '+because : '', [el.id, el.className, el.style.display, el.innerText])
+    if (DEBUG1) console.error('INVISIBLE '+el._css.position, because ? 'because '+because : '', [el.id, el.className, el.style.display, el.innerText])
     if (DEBUG1) console.log(el);
     // el.style.setProperty('display', 'none', 'important')
     el.style.setProperty('opacity', '0', 'important')
@@ -110,7 +104,7 @@ let DEBUG3 = true; // buttons inside cookie banner
     if (!window.el) {
       window.el = window.getelbyid
     }
-    if (DEBUG1) console.warn(' -------------------------------------- running extension removeAnnoyingAnnoyances() -------------------------------------- ')
+    if (DEBUG1) console.log(' -------------------------------------- running extension removeAnnoyingAnnoyances() -------------------------------------- ')
 
     /*
      * FREEZE GIFs
@@ -123,11 +117,6 @@ let DEBUG3 = true; // buttons inside cookie banner
     // let favicon = document.querySelector('link[rel*="icon"]')
     // if (DEBUG1) console.log('favicon',favicon)
       // .href = "//placehold.it/32/F00"
-
-    /*
-     * body should always be scrollable
-     */
-    document.body.style.setProperty('overflow', 'auto', 'important')
 
     /*
      * 1) Iterate every DOM element.
@@ -172,11 +161,11 @@ let DEBUG3 = true; // buttons inside cookie banner
         hideAA(el, 'fancybox', true)
       }
 
-        /*
-         *
-         * FIXED/STATIC
-         *
-         */
+      /*
+       *
+       * FIXED/STATIC
+       *
+       */
       if (el._css.position === 'fixed' || el._css.position === 'sticky') {
 
         el._css = window.getComputedStyle(el, null)
@@ -190,9 +179,10 @@ let DEBUG3 = true; // buttons inside cookie banner
         // el._bottom = Number((el._css.getPropertyValue('bottom') || '').replace(/[^\d.]+/g, '')) + Number((el._css.marginBottom || '').replace(/[^\d.]+/g, ''))
         el._right = Number((el._css.getPropertyValue('right') || '').replace(/[^\d.]+/g, '')) + Number((el._css.marginRight || '').replace(/[^\d.]+/g, ''))
         el._top = Number((el._css.getPropertyValue('top') || '').replace(/[^\d.]+/g, '')) + Number((el._css.marginTop || '').replace(/[^\d.]+/g, ''))
-        el._buttons = [
+        el._buttons = el.querySelectorAll('button')
+        el._buttons_and_links = [
           ...el.querySelectorAll('a'),
-          ...el.querySelectorAll('button'),
+          ...el._buttons,
           ...el.querySelectorAll('[data-action]'),
           ...[...el.querySelectorAll('*')]
             .filter(el=> {
@@ -356,53 +346,62 @@ let DEBUG3 = true; // buttons inside cookie banner
          * -
          * "X", "continue", "accept", etc
          */
-        // if (is_cookies) {
-        //   if (DEBUG3) console.log('is_cookies buttons',el._buttons)
-        // }
+        if (is_cookies) {
+          if (DEBUG3) console.log('is_cookies buttons',el._buttons_and_links)
+        }
         let bi = -1
-        for (let elb of el._buttons.reverse()) {
+        for (let elb of el._buttons_and_links.reverse()) {
           bi++
-          let nothanks = ["iaccept","acceptallcookies","acceptclose","nothanks","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','notnow','agree','yesimhappy']
+          let nothanks = ["gotit", "iaccept","acceptallcookies","acceptclose","nothanks","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','notnow','agree','yesimhappy']
           let elb_class = (elb.className||'').toLowerCase()
           let elb_id = (elb.id||'').toLowerCase()
           let elb_innerText = (elb.innerText||elb.value||'').substring(0, 100).toLowerCase().replace(/[^\w]+/g, '')
           let elb_innerHTML = (elb.innerHTML||'').substring(0, 300).toLowerCase()
           let elb_texts = elb_innerText+' '+elb_class+' '+elb_id
-          if (DEBUG3) console.error(['--- --- '+bi+' button text', elb_texts])
-          if (DEBUG3) console.error(['--- --- '+bi+' button HTML', elb_innerHTML])
+          if (DEBUG3) console.log('--- --- '+bi+' button text', elb_texts)
+          if (DEBUG3) console.log('--- --- '+bi+' button HTML', elb_innerHTML)
 
           // if about cookies, CLICK OK
           if (is_cookies || is_newsletter) {
             if (nothanks.includes(elb_innerText)) {
-              if (DEBUG3) console.log('--- clicked exact "agree / nothanks" COOKIES - line 319 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked exact "agree / nothanks" COOKIES - line 319 ---', elb_texts)
               elb.click()
               continue
             }
             if (elb_texts.includes('agree')) {
-              if (DEBUG3) console.log('--- clicked includes "agree / nothanks" COOKIES - line 325 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked includes "agree / nothanks" COOKIES - line 325 ---', elb_texts)
               elb.click()
               continue
             }
             // if [X] button
             if (elb_innerText === "close" || elb_innerText === "x" || elb_innerText === "×" || (elb.ariaLabel || '').toLowerCase().includes('close')) {
               // hideAA(el, '"X" "close" button')
-              if (DEBUG3) console.log('--- clicked text === "x / close" - line 345 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked text === "x / close" - line 345 ---', elb_texts)
               elb.click()
               continue
             }
             // if className mentions
             if (elb_class.includes('dismiss') || elb_class.includes('close')) {
               // hideAA(el, '"dismiss" button')
-              if (DEBUG3) console.log('--- clicked className includes "x / close" - line 351 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked className includes "x / close" - line 351 ---', elb_texts)
               elb.click()
               continue
             }
             // if inner HTML contains "close" - such as an alt="" img attribute
             if (elb_innerHTML.includes('close')) {
               // hideAA(el, '"dismiss" button')
-              if (DEBUG3) console.log('--- clicked html includes "close"', elb_innerHTML)
+              if (DEBUG3) console.error('--- clicked html includes "close"', elb_innerHTML)
               elb.click()
               continue
+            }
+          }
+
+          // if definitely cookie banner
+          if ((el._width<500 || el._height<200) && el.innerText.length<200) {
+            if (elb.tagName === 'BUTTON' && el._buttons.length<=2) {
+              // click every button! if total upto 2 buttons
+              if (DEBUG3) console.error('--- clicked every button/link inside ', elb_innerHTML)
+              elb.click()
             }
           }
         }

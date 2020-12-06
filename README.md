@@ -6,6 +6,14 @@ No more "accept our cookies", "would you allow cookies?", "accept our terms and 
 
 I'm working on this browser extension, currently only for Chrome. If you'd like to contribute, please, let's get in touch!
 
+# To install
+
+Coming to Chrome store soon. For now, please install manually.
+
+1. Download this entire Github folder. (Big green button "Code" above, then "Download ZIP")
+2. ![install to chrome://extensions](examples/installation.png)
+
+
 # Examples
 
 Before:
