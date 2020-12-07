@@ -2,9 +2,9 @@
  * NOTES:
  * - do not hide full-width full-height overlays - instead, find the "x" button and click on it
  */
-let DEBUG1 = true;// which stuff to hide/show
+let DEBUG1 = false;// which stuff to hide/show
 let DEBUG2 = false; // localStorage/indexDB
-let DEBUG3 = true; // buttons inside cookie banner
+let DEBUG3 = false; // buttons inside cookie banner
 // this is the code which will be injected into a given page...
 (function(){
   /*
@@ -167,11 +167,10 @@ let DEBUG3 = true; // buttons inside cookie banner
        *
        */
       if (el._css.position === 'fixed' || el._css.position === 'sticky') {
-
         el._css = window.getComputedStyle(el, null)
         el._id = (el.id||'').toLowerCase()
         el._class = (el.className?el.className.toString():'').toLowerCase()
-        el._innerText = el.innerText ? el.innerText.substr(0, 150).replace(/[^\w\d]+/g,'').toLowerCase() : ''
+        el._innerText = el.innerText ? el.innerText.substr(0, 150).replace(/[^\w]+/g,'').toLowerCase() : ''
         el._paddingSides = Number((el._css.paddingLeft || '').replace(/[^\d.]+/g, '')) + Number((el._css.paddingRight || '').replace(/[^\d.]+/g, ''))
         el._paddingTop = Number((el._css.paddingTop || '').replace(/[^\d.]+/g, '')) + Number((el._css.paddingBottom || '').replace(/[^\d.]+/g, ''))
         el._height = (el._css.height ? Number(el._css.height.replace(/[^0-9]/g, '')) : 0) + el._paddingTop
@@ -190,10 +189,19 @@ let DEBUG3 = true; // buttons inside cookie banner
               return _class.includes('button') || _class.includes('btn')
             })
         ]
+        /*
+         * detect if "cookie" consent banner
+         */
         let is_cookies = (el._innerText+el._class+el._id).includes('cookie')
         el._iframes = el.querySelectorAll('iframe')
+        /*
+         * detect if "newsletter signup"
+         */
         el._inputs = el.querySelectorAll('input[type="text"]')
         let is_newsletter = false
+        if (el._innerText.includes('email') || el._innerText.includes('signup')) {
+          is_newsletter = true
+        }
         for (let eli of el._inputs) {
           if (eli.parentElement.outerHTML.includes('email')) {
             is_newsletter = true
@@ -352,38 +360,39 @@ let DEBUG3 = true; // buttons inside cookie banner
         let bi = -1
         for (let elb of el._buttons_and_links.reverse()) {
           bi++
-          let nothanks = ["gotit", "iaccept","acceptallcookies","acceptclose","nothanks","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','notnow','agree','yesimhappy']
+          let nothanks = ["dismiss", "gotit", "iaccept","acceptallcookies","acceptclose","nothanks","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','notnow','agree','yesimhappy']
           let elb_class = (elb.className||'').toLowerCase()
           let elb_id = (elb.id||'').toLowerCase()
-          let elb_innerText = (elb.innerText||elb.value||'').substring(0, 100).toLowerCase().replace(/[^\w]+/g, '')
+          let elb_title = elb.title ? elb.title.toLowerCase() : ''
+          let elb_innerText = (elb.innerText||elb.value||'').substring(0, 100).toLowerCase().replace(/[^\w×]+/g, '')
           let elb_innerHTML = (elb.innerHTML||'').substring(0, 300).toLowerCase()
-          let elb_texts = elb_innerText+' '+elb_class+' '+elb_id
+          let elb_texts = elb_innerText+' '+elb_class+' '+elb_id+' '+elb_title
           if (DEBUG3) console.log('--- --- '+bi+' button text', elb_texts)
           if (DEBUG3) console.log('--- --- '+bi+' button HTML', elb_innerHTML)
 
           // if about cookies, CLICK OK
           if (is_cookies || is_newsletter) {
             if (nothanks.includes(elb_innerText)) {
-              if (DEBUG3) console.error('--- clicked exact "agree / nothanks" COOKIES - line 319 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked exact "agree / nothanks" COOKIES', elb_texts)
               elb.click()
               continue
             }
             if (elb_texts.includes('agree')) {
-              if (DEBUG3) console.error('--- clicked includes "agree / nothanks" COOKIES - line 325 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked includes "agree / nothanks" COOKIES', elb_texts)
               elb.click()
               continue
             }
             // if [X] button
             if (elb_innerText === "close" || elb_innerText === "x" || elb_innerText === "×" || (elb.ariaLabel || '').toLowerCase().includes('close')) {
               // hideAA(el, '"X" "close" button')
-              if (DEBUG3) console.error('--- clicked text === "x / close" - line 345 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked text === "x / close"', elb_texts)
               elb.click()
               continue
             }
             // if className mentions
-            if (elb_class.includes('dismiss') || elb_class.includes('close')) {
+            if (elb_texts.includes('dismiss') || elb_texts.includes('close')) {
               // hideAA(el, '"dismiss" button')
-              if (DEBUG3) console.error('--- clicked className includes "x / close" - line 351 ---', elb_texts)
+              if (DEBUG3) console.error('--- clicked texts includes "dismiss / close"', elb_texts)
               elb.click()
               continue
             }
