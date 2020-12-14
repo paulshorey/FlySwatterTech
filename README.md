@@ -1,6 +1,4 @@
-# Welcome
-
-To a world where you can browse the web without being pestered by annoying popups, notifications, popup banners, consent buttons, cookies, terms, newsletters, etc.
+# No more popups / floating ads / cookie prompts...
 
 No more "accept our cookies", "would you allow cookies?", "accept our terms and privacy policy", "sign up for our newsletter" in your face. I just want to get to the website content, without clicking and closing things first. Every site. It is so annoying. You're probably used to it. Anyway, it probably still contributes to subconscious frustration and makes you tired from browsing the web. It doesn't have to be like that.
 
@@ -8,17 +6,16 @@ No more "accept our cookies", "would you allow cookies?", "accept our terms and 
 
 I'm working on this browser extension, currently only for Chrome. If you'd like to contribute, please, let's get in touch!
 
+### ⚠️ Doesn't break the webpage (most of the time)... ⚠️
+
+I've tried several similar plugins. This one works most reliably (removes more floating banners, usually does not break the page). However, when on an admin dashboard or other web app, sometimes it relies on floating content, which this turns off. **You may want to disable this for certain domains (like airbnb.com) or sub-domains (like app.gitbook.com).** To turn it off for a specific website domain. **Click the little "fly and swatter" icon is added to the bottom left corner of your browser window.** Click to this to turn off the extension. Click it again to turn it back on.
+
 # To install
 
 Coming to Chrome store soon. For now, please install manually.
 
 1. Download this entire Github folder. (Big green button "Code" above, then "Download ZIP")
 2. ![install to chrome://extensions](examples/installation.png)
-
-
-# To turn it off for a particular website/domain
-
-A little "fly and swatter" icon is added to the bottom left corner of your browser window. Click this to turn off the extension. Click it again to turn it back on. Etc.
 
 
 # Examples
