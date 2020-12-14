@@ -8,7 +8,7 @@ I'm working on this browser extension, currently only for Chrome. If you'd like 
 
 ### ⚠️ Doesn't break the webpage (most of the time)... ⚠️
 
-I've tried several similar plugins. This one works most reliably (removes more floating banners, usually does not break the page). However, when on an admin dashboard or other web app, sometimes it relies on floating content, which this turns off. **You may want to disable this for certain domains (like airbnb.com) or sub-domains (like app.gitbook.com).** To turn it off for a specific website domain. **Click the little "fly and swatter" icon is added to the bottom left corner of your browser window.** Click to this to turn off the extension. Click it again to turn it back on.
+I've tried several similar plugins. This one works most reliably (removes more floating banners, usually does not break the page). However, when on an admin dashboard or other web app, sometimes it relies on floating content, which this turns off. **You may want to disable this for certain domains (like airbnb.com) or sub-domains (like app.gitbook.com).** To turn it off for a specific website domain. **Click the little "fly and swatter" image (button) which will be added to the bottom left corner of your browser window.** Click to this to turn off the extension. Click it again to turn it back on.
 
 # To install
 
