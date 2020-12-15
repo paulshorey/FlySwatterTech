@@ -24,8 +24,8 @@ let DEBUG3 = false; // buttons inside cookie banner
    */
   let toggle = document.createElement('div');
   toggle.innerHTML = `
-      <img src="${chrome.runtime.getURL(`src/images/flyswatter-${!disabled?"on":"off"}.svg`)}" height="18px" style="margin-right:0" />
-      <b style="font-size: 10px;font-weight: 700; font-family: sans-serif;">${!disabled?"&nbsp;on":"&nbsp;off"}</b>
+      <img src="${chrome.runtime.getURL(`src/images/flyswatter-${!disabled?"on":"off"}.svg`)}" height="18px" style="margin-right:0;height:18px;width:18px;display:inline;" />
+      <b style="display:inline;font-size:10px;font-weight:700;font-family:sans-serif;">${!disabled?"&nbsp;on":"&nbsp;off"}</b>
     `;
   toggle.style.position = 'fixed';
   toggle.style.bottom = '3px';
@@ -360,7 +360,8 @@ let DEBUG3 = false; // buttons inside cookie banner
         let bi = -1
         for (let elb of el._buttons_and_links.reverse()) {
           bi++
-          let nothanks = ["dismiss", "gotit", "iaccept","acceptallcookies","acceptclose","nothanks","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','notnow','agree','yesimhappy']
+          let click_no = ["maybelater","dismiss", "nothanks",'notnow',]
+          let click_yes = ["gotit", "iaccept","acceptallcookies","acceptclose","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','agree','yesimhappy']
           let elb_class = (elb.className||'').toLowerCase()
           let elb_id = (elb.id||'').toLowerCase()
           let elb_title = elb.title ? elb.title.toLowerCase() : ''
@@ -370,10 +371,17 @@ let DEBUG3 = false; // buttons inside cookie banner
           if (DEBUG3) console.log('--- --- '+bi+' button text', elb_texts)
           if (DEBUG3) console.log('--- --- '+bi+' button HTML', elb_innerHTML)
 
-          // if about cookies, CLICK OK
+          // about cookies or anything, CLICK NO
+          if (click_no.includes(elb_innerText)) {
+            if (DEBUG3) console.error('--- clicked exact [click_no]', elb_texts)
+            elb.click()
+            continue
+          }
+
+          // if about cookies, CLICK YES
           if (is_cookies || is_newsletter) {
-            if (nothanks.includes(elb_innerText)) {
-              if (DEBUG3) console.error('--- clicked exact "agree / nothanks" COOKIES', elb_texts)
+            if (click_yes.includes(elb_innerText)) {
+              if (DEBUG3) console.error('--- clicked exact [click_yes] COOKIES', elb_texts)
               elb.click()
               continue
             }
