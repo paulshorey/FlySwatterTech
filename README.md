@@ -47,3 +47,7 @@ After:
 ![redhat.com after](examples/redhat-after.png)
 
 <hr />
+
+# Toggle ON/OFF
+
+This adds a little button on the bottom left corner of your screen. By default, it is ON. For any site (any domain like google.com, or subdomain like app.gitbook.com) you click the button to disable this functionality - until you clear your site cache or click on it again.
