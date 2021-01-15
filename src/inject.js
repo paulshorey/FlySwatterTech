@@ -1,10 +1,13 @@
 /*
  * NOTES:
  * - do not hide full-width full-height overlays - instead, find the "x" button and click on it
+ * TODO:
+ * - hide (or click X) bottom bar if it mentions
+ *    - must know, trending,
  */
-let DEBUG1 = false;// which stuff to hide/show
-let DEBUG2 = false; // localStorage/indexDB
-let DEBUG3 = false; // buttons inside cookie banner
+let DEBUG1 = true;// which stuff to hide/show
+let DEBUG2 = true; // localStorage/indexDB
+let DEBUG3 = true; // buttons inside cookie banner
 // this is the code which will be injected into a given page...
 (function(){
   /*
@@ -24,7 +27,7 @@ let DEBUG3 = false; // buttons inside cookie banner
    */
   let toggle = document.createElement('div');
   toggle.innerHTML = `
-      <img src="${chrome.runtime.getURL(`src/images/flyswatter-${!disabled?"on":"off"}.svg`)}" height="18px" style="margin-right:0;height:18px;width:18px;display:inline;" />
+      <img src="${chrome.runtime.getURL(`src/images/flyswatter-${!disabled?"on":"off"}.svg`)}" height="18px" style="margin-right:0;height:18px;width:18px;display:inline;border:none;" />
       <b style="display:inline;font-size:10px;font-weight:700;font-family:sans-serif;">${!disabled?"&nbsp;on":"&nbsp;off"}</b>
     `;
   toggle.style.position = 'fixed';
@@ -175,7 +178,7 @@ let DEBUG3 = false; // buttons inside cookie banner
         el._paddingTop = Number((el._css.paddingTop || '').replace(/[^\d.]+/g, '')) + Number((el._css.paddingBottom || '').replace(/[^\d.]+/g, ''))
         el._height = (el._css.height ? Number(el._css.height.replace(/[^0-9]/g, '')) : 0) + el._paddingTop
         el._width = (el._css.width ? Number(el._css.width.replace(/[^0-9]/g, '')) : 0) + el._paddingSides
-        // el._bottom = Number((el._css.getPropertyValue('bottom') || '').replace(/[^\d.]+/g, '')) + Number((el._css.marginBottom || '').replace(/[^\d.]+/g, ''))
+        el._bottom = Number((el._css.getPropertyValue('bottom') || '').replace(/[^\d.]+/g, '')) + Number((el._css.marginBottom || '').replace(/[^\d.]+/g, ''))
         el._right = Number((el._css.getPropertyValue('right') || '').replace(/[^\d.]+/g, '')) + Number((el._css.marginRight || '').replace(/[^\d.]+/g, ''))
         el._top = Number((el._css.getPropertyValue('top') || '').replace(/[^\d.]+/g, '')) + Number((el._css.marginTop || '').replace(/[^\d.]+/g, ''))
         el._buttons = el.querySelectorAll('button')
@@ -192,19 +195,18 @@ let DEBUG3 = false; // buttons inside cookie banner
         /*
          * detect if "cookie" consent banner
          */
-        let is_cookies = (el._innerText+el._class+el._id).includes('cookie')
+        el._is_cookies = (el._innerText+el._class+el._id).includes('cookie')
         el._iframes = el.querySelectorAll('iframe')
         /*
          * detect if "newsletter signup"
          */
         el._inputs = el.querySelectorAll('input[type="text"]')
-        let is_newsletter = false
         if (el._innerText.includes('email') || el._innerText.includes('signup')) {
-          is_newsletter = true
+          el._is_newsletter = true
         }
         for (let eli of el._inputs) {
           if (eli.parentElement.outerHTML.includes('email')) {
-            is_newsletter = true
+            el._is_newsletter = true
             break;
           }
         }
@@ -220,7 +222,7 @@ let DEBUG3 = false; // buttons inside cookie banner
          * ALLOW TOP NAV LINKS
          *
          */
-        if (!is_cookies) {
+        if (!el._is_cookies) {
           if (
             el.tagName === 'HEADER' ||
             el._class.includes('head') ||
@@ -270,13 +272,17 @@ let DEBUG3 = false; // buttons inside cookie banner
           (el.id.match && (el.id.match(/Ad[A-Z]+/)))
         ) {
           // remove!
-          hideAA(el, 'is advertisement className/id', force)
+          hideAA(el, 'is advertisement className/id', true)
           continue;
         }
+        // is bottom floating advertisement
+        if (el._bottom===0 && el._width===window.width && el._innerText.length<20) {
+          el._is_ad = true
+        }
 
-        /*
-         * is notification!
-         */
+          /*
+           * is notification!
+           */
         if (el._class.includes('notification')) {
           // remove!
           hideAA(el, 'is notification className')
@@ -354,14 +360,15 @@ let DEBUG3 = false; // buttons inside cookie banner
          * -
          * "X", "continue", "accept", etc
          */
-        if (is_cookies) {
-          if (DEBUG3) console.log('is_cookies buttons',el._buttons_and_links)
+        if (el._is_cookies) {
+          if (DEBUG3) console.log('el._is_cookies buttons',el._buttons_and_links)
         }
         let bi = -1
         for (let elb of el._buttons_and_links.reverse()) {
           bi++
+          let click_always = ['gotit','maybelater']
           let click_no = ["maybelater","dismiss", "nothanks",'notnow',]
-          let click_yes = ["gotit", "iaccept","acceptallcookies","acceptclose","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','agree','yesimhappy']
+          let click_yes = ["gotit", "iaccept","closeandaccept","acceptandclose","acceptallcookies","acceptclose","continue","ok","yes","accept",'allowcookies','acceptcookies','thanks','agree','yesimhappy']
           let elb_class = (elb.className||'').toLowerCase()
           let elb_id = (elb.id||'').toLowerCase()
           let elb_title = elb.title ? elb.title.toLowerCase() : ''
@@ -371,20 +378,23 @@ let DEBUG3 = false; // buttons inside cookie banner
           if (DEBUG3) console.log('--- --- '+bi+' button text', elb_texts)
           if (DEBUG3) console.log('--- --- '+bi+' button HTML', elb_innerHTML)
 
-          // about cookies or anything, CLICK NO
-          if (click_no.includes(elb_innerText)) {
-            if (DEBUG3) console.error('--- clicked exact [click_no]', elb_texts)
-            elb.click()
-            continue
-          }
 
           // if about cookies, CLICK YES
-          if (is_cookies || is_newsletter) {
+          if (el._is_cookies) {
             if (click_yes.includes(elb_innerText)) {
               if (DEBUG3) console.error('--- clicked exact [click_yes] COOKIES', elb_texts)
               elb.click()
               continue
             }
+          }
+          // if possible, CLICK NO
+          if (click_no.includes(elb_innerText)) {
+            if (DEBUG3) console.error('--- clicked exact [click_no]', elb_texts)
+            elb.click()
+            continue
+          }
+          // if is promotion, CLICK SOMETHING TO GET RID OF IT
+          if (el._is_cookies || el._is_newsletter || el._is_ad) {
             if (elb_texts.includes('agree')) {
               if (DEBUG3) console.error('--- clicked includes "agree / nothanks" COOKIES', elb_texts)
               elb.click()
@@ -413,14 +423,20 @@ let DEBUG3 = false; // buttons inside cookie banner
             }
           }
 
-          // if definitely cookie banner
-          if ((el._width<500 || el._height<200) && el.innerText.length<200) {
-            if (elb.tagName === 'BUTTON' && el._buttons.length<=2) {
-              // click every button! if total upto 2 buttons
-              if (DEBUG3) console.error('--- clicked every button/link inside ', elb_innerHTML)
-              elb.click()
-            }
+          // if some prompt that is easy to predict - always safe to click
+          if (click_always.includes(elb_innerText)) {
+            if (DEBUG3) console.error('--- clicked exact [click_always] COOKIES', elb_texts)
+            elb.click()
+            continue
           }
+          // // if definitely cookie banner
+          // if ((el._width<500 || el._height<200) && el.innerText.length<200) {
+          //   if (elb.tagName === 'BUTTON' && el._buttons.length<=2) {
+          //     // click every button! if total upto 2 buttons
+          //     if (DEBUG3) console.error('--- clicked every button/link inside ', elb_innerHTML)
+          //     elb.click()
+          //   }
+          // }
         }
       }
     }
