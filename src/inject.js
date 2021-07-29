@@ -2,7 +2,7 @@
  * TODO:
  * - hide (or click X) if "bottom bar" mentions "must know", "trending" and total text is not more than a 140 characters
  */
-;(function () {
+;(function() {
   let DEBUG1 = false // which stuff to hide/show
   let DEBUG2 = false // localStorage/indexDB
   let DEBUG3 = false // buttons inside cookie banner
@@ -27,12 +27,12 @@
     toggle.id = "toggleFlySwatter"
     toggle.innerHTML = `
       <img src="${chrome.runtime.getURL(
-        `src/images/flyswatter-${!disabled ? "on" : "off"}.svg`
-      )}" height="18px" style="margin-right:0;height:18px;width:18px;display:inline;border:none;" />
-      <b style="display:inline;font-size:10px;font-weight:700;font-family:sans-serif;">${
-        !disabled ? "&nbsp;on" : "&nbsp;off"
-      }</b>
+      `src/images/flyswatter-${!disabled ? "on" : "off"}.svg`
+    )}" height="18px" style="margin-right:0;height:18px;width:18px;display:inline;border:none;" />
     `
+    // <b style="display:inline;font-size:10px;font-weight:700;font-family:sans-serif;">${
+    //   !disabled ? "&nbsp;on" : "&nbsp;off"
+    // }</b>
     toggle.style.position = "fixed"
     toggle.style.bottom = "3px"
     toggle.style.left = "7px"
@@ -41,7 +41,7 @@
     if (!!disabled) {
       toggle.style.opacity = "0.33"
     }
-    toggle.onclick = function () {
+    toggle.onclick = function() {
       window.localStorage.setItem("flySwatterTech-" + window.location.host, !disabled)
       if (DEBUG2) console.log("donotuse onclick", !donotuse)
       window.location.reload()
@@ -57,7 +57,7 @@
    * LIB
    */
   if (DEBUG1) console.clear()
-  const hideAA = function (el, because = "", force = false) {
+  const hideAA = function(el, because = "", force = false) {
     // allow if it seems useful
     if (!force) {
       if (el._width > Math.max(410, window.innerWidth / 3) && el._height > Math.max(410, window.innerheight / 3)) {
@@ -78,7 +78,7 @@
     el.style.setProperty("visibility", "hidden", "important")
     el.style.setProperty("pointer-events", "none", "important")
   }
-  const invisibleAA = function (el, because = "") {
+  const invisibleAA = function(el, because = "") {
     //
     if (DEBUG1)
       console.error("INVISIBLE " + el._css.position, because ? "because " + because : "", [
@@ -94,10 +94,10 @@
     el.style.setProperty("pointer-events", "none", "important")
   }
 
-  const is_gif_image = function (i) {
+  const is_gif_image = function(i) {
     return /^(?!data:).*\.gif/i.test(i.src)
   }
-  const freeze_gif = function (i) {
+  const freeze_gif = function(i) {
     let c = document.createElement("canvas")
     let w = (c.width = i.width)
     let h = (c.height = i.height)
@@ -111,12 +111,12 @@
     }
   }
 
-  const removeAnnoyingAnnoyances = function () {
+  const removeAnnoyingAnnoyances = function() {
     /*
      * SHORTCUT (for development)
      */
     if (!window.getelbyid) {
-      window.getelbyid = function (selector) {
+      window.getelbyid = function(selector) {
         window.el = document.querySelector(selector)
       }
     }
@@ -128,10 +128,11 @@
         " -------------------------------------- running extension removeAnnoyingAnnoyances() -------------------------------------- "
       )
 
-    /*
-     * FREEZE GIFs
-     */
-    ;[].slice.apply(document.images).filter(is_gif_image).map(freeze_gif)
+      /*
+       * FREEZE GIFs
+       */
+      ;
+    [].slice.apply(document.images).filter(is_gif_image).map(freeze_gif)
 
     /*
      * Remove animated (gif) favicons
@@ -201,9 +202,9 @@
         el._class = (el.className ? el.className.toString() : "").toLowerCase()
         el._innerText = el.innerText
           ? el.innerText
-              .substr(0, 150)
-              .replace(/[^\w]+/g, "")
-              .toLowerCase()
+            .substr(0, 150)
+            .replace(/[^\w]+/g, "")
+            .toLowerCase()
           : ""
         el._paddingSides =
           Number((el._css.paddingLeft || "").replace(/[^\d.]+/g, "")) +
@@ -240,7 +241,7 @@
         /*
          * detect if "newsletter signup"
          */
-        el._inputs = el.querySelectorAll('input[type="text"]')
+        el._inputs = el.querySelectorAll("input[type=\"text\"]")
         if (el._innerText.includes("email") || el._innerText.includes("signup")) {
           el._is_newsletter = true
         }
@@ -354,7 +355,7 @@
          */
         if (el._height < 100 && el._innerText.includes("$")) {
           // remove!
-          hideAA(el, 'height < 100 and innerText includes "$"')
+          hideAA(el, "height < 100 and innerText includes \"$\"")
           continue
         }
 
@@ -363,7 +364,7 @@
          */
         if (el._class.includes("popup")) {
           // remove!
-          hideAA(el, 'is class="popup"')
+          hideAA(el, "is class=\"popup\"")
           continue
         }
 
@@ -454,7 +455,7 @@
           // if is promotion, CLICK SOMETHING TO GET RID OF IT
           if (el._is_cookies || el._is_newsletter || el._is_ad) {
             if (elb_texts.includes("agree")) {
-              if (DEBUG3) console.error('--- clicked includes "agree / nothanks" COOKIES', elb_texts)
+              if (DEBUG3) console.error("--- clicked includes \"agree / nothanks\" COOKIES", elb_texts)
               elb.click()
               continue
             }
@@ -466,21 +467,21 @@
               (elb.ariaLabel || "").toLowerCase().includes("close")
             ) {
               // hideAA(el, '"X" "close" button')
-              if (DEBUG3) console.error('--- clicked text === "x / close"', elb_texts)
+              if (DEBUG3) console.error("--- clicked text === \"x / close\"", elb_texts)
               elb.click()
               continue
             }
             // if className mentions
             if (elb_texts.includes("dismiss") || elb_texts.includes("close")) {
               // hideAA(el, '"dismiss" button')
-              if (DEBUG3) console.error('--- clicked texts includes "dismiss / close"', elb_texts)
+              if (DEBUG3) console.error("--- clicked texts includes \"dismiss / close\"", elb_texts)
               elb.click()
               continue
             }
             // if inner HTML contains "close" - such as an alt="" img attribute
             if (elb_innerHTML.includes("close")) {
               // hideAA(el, '"dismiss" button')
-              if (DEBUG3) console.error('--- clicked html includes "close"', elb_innerHTML)
+              if (DEBUG3) console.error("--- clicked html includes \"close\"", elb_innerHTML)
               elb.click()
               continue
             }
