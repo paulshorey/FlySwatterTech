@@ -1,12 +1,10 @@
-/*
- * TODO:
- * - hide (or click X) if "bottom bar" mentions "must know", "trending" and total text is not more than a 140 characters
- */
-;(function() {
+(function() {
   let DEBUG1 = false // which stuff to hide/show
   let DEBUG2 = false // localStorage/indexDB
   let DEBUG3 = false // buttons inside cookie banner
   let DEBUG4 = false // buttons inside cookie banner - advanced
+
+
   /*
    * IS DISABLED ?
    */
@@ -17,10 +15,11 @@
     donotuse = JSON.parse(donotuse)
   }
   if (DEBUG2) console.log("donotuse parsed", donotuse)
-  let disabled = !!donotuse
+
   /*
-   * CLICK TOGGLE BUTTON TO DISABLE
+   * DISABLE?
    */
+  let disabled = !!donotuse
   let toggleEl = document.getElementById("toggleFlySwatter")
   if (!toggleEl) {
     let toggle = document.createElement("div")
@@ -30,9 +29,6 @@
       `src/images/flyswatter-${!disabled ? "on" : "off"}.svg`
     )}" height="18px" style="margin-right:0;height:18px;width:18px;display:inline;border:none;" />
     `
-    // <b style="display:inline;font-size:10px;font-weight:700;font-family:sans-serif;">${
-    //   !disabled ? "&nbsp;on" : "&nbsp;off"
-    // }</b>
     toggle.style.position = "fixed"
     toggle.style.bottom = "3px"
     toggle.style.left = "7px"
@@ -49,15 +45,69 @@
     }
     window.document.body.appendChild(toggle)
   }
-  /*
-   * DISABLED
-   */
+  // yes, disable
   if (!!disabled) return
+
   /*
-   * LIB
+   * RUN FLY SWATTER
    */
   if (DEBUG1) console.clear()
-  const hideAA = function(el, because = "", force = false) {
+  // on page load, as soon as elements are loaded, destroy them!
+  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 0 }), 0)
+  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 1000 }), 1000)
+  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 2500 }), 2500)
+  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 5000 }), 5000)
+  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 9000 }), 9000)
+  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 13000 }), 13000)
+
+  /*
+   * RUN GOOGLE
+   */
+  setTimeout(fixGoogle.bind({ timeout: 1000 }), 1000)
+
+
+  /*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * LIBRARY FUNCTIONS BELOW
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
+  function hideAA(el, because = "", force = false) {
     // allow if it seems useful
     if (!force) {
       if (el._width > Math.max(410, window.innerWidth / 3) && el._height > Math.max(410, window.innerheight / 3)) {
@@ -78,7 +128,8 @@
     el.style.setProperty("visibility", "hidden", "important")
     el.style.setProperty("pointer-events", "none", "important")
   }
-  const invisibleAA = function(el, because = "") {
+
+  function invisibleAA(el, because = "") {
     //
     if (DEBUG1)
       console.error("INVISIBLE " + el._css.position, because ? "because " + because : "", [
@@ -94,10 +145,12 @@
     el.style.setProperty("pointer-events", "none", "important")
   }
 
-  const is_gif_image = function(i) {
+
+  function is_gif_image(i) {
     return /^(?!data:).*\.gif/i.test(i.src)
   }
-  const freeze_gif = function(i) {
+
+  function freeze_gif(i) {
     let c = document.createElement("canvas")
     let w = (c.width = i.width)
     let h = (c.height = i.height)
@@ -111,7 +164,7 @@
     }
   }
 
-  const removeAnnoyingAnnoyances = function() {
+  function removeAnnoyingAnnoyances() {
     /*
      * SHORTCUT (for development)
      */
@@ -506,23 +559,27 @@
     }
   }
 
-  // on page load, as soon as elements are loaded, destroy them!
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 0 }), 0)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 1000 }), 1000)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 2500 }), 2500)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 5000 }), 5000)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 9000 }), 9000)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 13000 }), 13000)
-})()
+  function fixGoogle() {
 
-/*
- * Legacy
- */
-// just place a div at top right
-// let div = document.createElement('div')
-// div.style.position = 'fixed'
-// div.style.top = 0
-// div.style.right = 0
-// div.style.zIndex = 999999
-// div.textContent = 'Injected!'
-// document.body.appendChild(div)
+    let elems = window.document.body.querySelectorAll("#search a")
+    let len = elems.length
+    for_each_element: for (let i = 0; i < len; i++) {
+      let link = elems[i]
+      link.dataset.ved = ""
+      link.removeAttribute("data-ved", "")
+      link.removeAttribute("ping", "")
+      // link.style.pointerEvents = "none"
+      link.addEventListener("click", function(e) {
+        console.error(link.href);
+        e.preventDefault();
+        window.open(link.href);
+      })
+
+      // fix the link
+      if (!window.link) {
+        window.link = link
+      }
+    }
+  }
+
+})()
