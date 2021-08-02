@@ -39,7 +39,7 @@
     toggle.style["z-index"] = "2147483647"
     toggle.style.cursor = "pointer"
     if (!!disabled) {
-      toggle.style.opacity = "0.33"
+      toggle.style.opacity = "0.125"
     }
     toggle.onclick = function() {
       window.localStorage.setItem("flySwatterTech-" + window.location.host, !disabled)
