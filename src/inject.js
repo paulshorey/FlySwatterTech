@@ -607,7 +607,7 @@
     let tads = window.document.querySelector("#taw")
     if (tads) {
       tads.style.opacity = "0.33"
-      bads.style.display = "none"
+      tads.style.display = "none"
     }
     let adlists = window.document.querySelectorAll("#taw [role=\"list\"], #taw [role=\"list\"]")
     for (let adlist of Array.from(adlists)) {
@@ -694,7 +694,7 @@
         extabar.style.height = "30px"
       } else {
         extabar.style.opacity = "0.67"
-        extabar.style.height = "60px"
+        extabar.style.height = "53.3px"
         // HELP the person set more than 10 results
         if (stats) {
           stats.innerHTML = `
