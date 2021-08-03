@@ -48,26 +48,33 @@
   }
   // yes, disable
   if (!!disabled) return
+  // debug
+  if (DEBUG1) console.clear()
+
+  let IS_GOOGLE_SEARCH = window.location.href.includes("google.") && window.location.pathname.includes("/search")
+
 
   /*
    * RUN FLY SWATTER
    */
-  if (DEBUG1) console.clear()
-  // on page load, as soon as elements are loaded, destroy them!
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 0 }), 0)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 1000 }), 1000)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 2500 }), 2500)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 5000 }), 5000)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 9000 }), 9000)
-  setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 13000 }), 13000)
+  if (!IS_GOOGLE_SEARCH) {
+    // on page load, as soon as elements are loaded, destroy them!
+    setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 0 }), 0)
+    setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 1000 }), 1000)
+    setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 2500 }), 2500)
+    setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 5000 }), 5000)
+    setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 9000 }), 9000)
+    setTimeout(removeAnnoyingAnnoyances.bind({ timeout: 13000 }), 13000)
+  }
 
   /*
    * RUN GOOGLE
    */
-  setTimeout(fixGoogle.bind({ timeout: 0 }), 0)
-  setTimeout(fixGoogle.bind({ timeout: 1000 }), 1000)
-  setTimeout(fixGoogle.bind({ timeout: 2000 }), 2000)
-
+  if (IS_GOOGLE_SEARCH) {
+    setTimeout(fixGoogle.bind({ timeout: 0 }), 0)
+    setTimeout(fixGoogle.bind({ timeout: 1000 }), 1000)
+    setTimeout(fixGoogle.bind({ timeout: 2000 }), 2000)
+  }
 
   /*
    *
@@ -563,6 +570,7 @@
   }
 
   function fixGoogle() {
+    // open external links in new tab
     let elems = window.document.body.querySelectorAll("#search a")
     let len = elems.length
     for (let i = 0; i < len; i++) {
@@ -572,11 +580,90 @@
       link.removeAttribute("data-ved", "")
       link.removeAttribute("ping", "")
       link.setAttribute("target", "_blank")
-
       // fix the link
       if (!window.link) {
         window.link = link
       }
+    }
+    // hide ads and annoying content
+    // let selectors = ['#taw','#botstuff','#bottomads']
+    let botstuff = window.document.querySelector("#botstuff")
+    if (botstuff) {
+      botstuff.parentNode.removeChild(botstuff)
+    }
+    let bads = window.document.querySelector("#bottomads")
+    if (bads) {
+      bads.style.opacity = "0.33"
+    }
+    let tads = window.document.querySelector("#taw")
+    if (tads) {
+      tads.style.opacity = "0.33"
+    }
+    let topStoriesTitle = document.querySelector("title-with-lhs-icon")
+    if (topStoriesTitle) {
+      try {
+        topStoriesTitle.parentElement.parentElement.parentElement.style.display = "none"
+      } catch (e) {}
+    }
+    let accordions = window.document.querySelectorAll("g-accordion-expander")
+    for (let accordion of Array.from(accordions)) {
+      if (accordion) {
+        // accordion.style.opacity = "0.33"
+        accordion.style.display = "none"
+      }
+    }
+    let specials = window.document.querySelectorAll("g-section-with-header")
+    for (let special of Array.from(specials)) {
+      if (special) {
+        // special.style.opacity = "0.33"
+        special.parentElement.style.display = "none"
+      }
+    }
+    let expandables = window.document.querySelectorAll("g-expandable-container")
+    for (let expandable of Array.from(expandables)) {
+      if (expandable) {
+        // expandable.style.opacity = "0.33"
+        expandable.style.display = "none"
+      }
+    }
+    let nav = window.document.querySelector("#rcnt div[role=\"navigation\"]")
+    if (nav) {
+      console.log("found nav", nav)
+      nav.style.marginTop = "80px"
+      nav.style.marginBottom = "100px"
+    }
+    {
+      let aTags = document.querySelectorAll("h3 span")
+      let searchText = "People also ask"
+      let found
+      for (let i = 0; i < aTags.length; i++) {
+        if (aTags[i].textContent == searchText) {
+          found = aTags[i]
+          break
+        }
+      }
+      if (found) {
+        found.parentElement.parentElement.parentElement.parentElement.style.display = "none"
+      }
+    }
+
+    let hrs = window.document.querySelectorAll("hr")
+    for (let hr of Array.from(hrs)) {
+      hr.style.display = "none"
+    }
+
+    let gels = window.document.querySelectorAll("#search .g")
+    for (let gel of Array.from(gels)) {
+      gel.parentElement.style.marginBottom = "30px"
+      // gel.nextElementSibling.style.marginBottom = "30px"
+      // gel.previousElementSibling.style.marginBottom = "30px"
+    }
+
+
+    let extabar = window.document.querySelector("#extabar")
+    if (extabar) {
+      extabar.style.opacity = "0"
+      extabar.style.height = "30px"
     }
   }
 
