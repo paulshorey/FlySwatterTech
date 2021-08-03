@@ -14,6 +14,7 @@
   if (typeof donotuse === "string") {
     donotuse = JSON.parse(donotuse)
   }
+
   if (DEBUG2) console.log("donotuse parsed", donotuse)
 
   /*
@@ -63,7 +64,9 @@
   /*
    * RUN GOOGLE
    */
+  setTimeout(fixGoogle.bind({ timeout: 0 }), 0)
   setTimeout(fixGoogle.bind({ timeout: 1000 }), 1000)
+  setTimeout(fixGoogle.bind({ timeout: 2000 }), 2000)
 
 
   /*
@@ -560,20 +563,15 @@
   }
 
   function fixGoogle() {
-
     let elems = window.document.body.querySelectorAll("#search a")
     let len = elems.length
-    for_each_element: for (let i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
       let link = elems[i]
+      if (!link.dataset.ved) continue
       link.dataset.ved = ""
       link.removeAttribute("data-ved", "")
       link.removeAttribute("ping", "")
-      // link.style.pointerEvents = "none"
-      link.addEventListener("click", function(e) {
-        console.error(link.href);
-        e.preventDefault();
-        window.open(link.href);
-      })
+      link.setAttribute("target", "_blank")
 
       // fix the link
       if (!window.link) {
