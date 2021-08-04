@@ -46,12 +46,16 @@
     }
     window.document.body.appendChild(toggle)
   }
+  // fix google links
+  let IS_GOOGLE = window.location.href.includes("google.")
+  if (IS_GOOGLE && window.location.pathname.includes("/search")) {
+    setTimeout(fixGoogleSearch.bind({ timeout: 500 }), 500)
+    setTimeout(fixGoogleSearch.bind({ timeout: 1000 }), 1000)
+  }
   // yes, disable
   if (!!disabled) return
   // debug
   if (DEBUG1) console.clear()
-
-  let IS_GOOGLE = window.location.href.includes("google.")
 
 
   /*
@@ -72,8 +76,8 @@
    * RUN GOOGLE
    */
   if (IS_GOOGLE && window.location.pathname.includes("/search")) {
-    setTimeout(fixGoogleSearch.bind({ timeout: 500 }), 500)
-    setTimeout(fixGoogleSearch.bind({ timeout: 1000 }), 1000)
+    setTimeout(fixGoogleAds.bind({ timeout: 500 }), 500)
+    setTimeout(fixGoogleAds.bind({ timeout: 1000 }), 1000)
   }
   if (IS_GOOGLE && window.location.pathname.includes("/preferences")) {
     setTimeout(fixGooglePreferences.bind({ timeout: 500 }), 500)
@@ -582,7 +586,6 @@
   }
 
   function fixGoogleSearch() {
-
     // open external links in new tab
     let links = Array.from(window.document.body.querySelectorAll("#search a"))
     for (let link of links) {
@@ -592,21 +595,27 @@
       link.removeAttribute("ping", "")
       link.setAttribute("target", "_blank")
     }
+  }
+
+  function fixGoogleAds() {
+
     let num_search_results = Array.from(window.document.body.querySelectorAll("#search h3")).length
     // hide ads and annoying content
     // let selectors = ['#taw','#botstuff','#bottomads']
     let botstuff = window.document.querySelector("#botstuff")
     if (botstuff) {
-      botstuff.parentNode.removeChild(botstuff)
+      botstuff.style.opacity = "0.33"
+      // botstuff.style.display = "none"
+      // botstuff.parentNode.removeChild(botstuff)
     }
     let bads = window.document.querySelector("#bottomads")
     if (bads) {
-      bads.style.opacity = "0.33"
+      // bads.style.opacity = "0.33"
       bads.style.display = "none"
     }
     let tads = window.document.querySelector("#taw")
     if (tads) {
-      tads.style.opacity = "0.33"
+      // tads.style.opacity = "0.33"
       tads.style.display = "none"
     }
     let adlists = window.document.querySelectorAll("#taw [role=\"list\"], #taw [role=\"list\"]")
@@ -619,15 +628,16 @@
     let topStoriesTitle = document.querySelector("title-with-lhs-icon")
     if (topStoriesTitle) {
       try {
+        topStoriesTitle.style.border = "solid 5px red"
         topStoriesTitle.parentElement.parentElement.parentElement.style.display = "none"
       } catch (e) {}
     }
-    let localResult = document.querySelector("g-img")
-    if (localResult) {
-      try {
-        localResult.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = "none"
-      } catch (e) {}
-    }
+    // let localResult = document.querySelector("g-img")
+    // if (localResult) {
+    //   try {
+    //     localResult.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = "none"
+    //   } catch (e) {}
+    // }
     let accordions = window.document.querySelectorAll("g-accordion-expander")
     for (let accordion of Array.from(accordions)) {
       if (accordion) {
