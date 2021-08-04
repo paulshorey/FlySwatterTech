@@ -72,11 +72,11 @@
    * RUN GOOGLE
    */
   if (IS_GOOGLE && window.location.pathname.includes("/search")) {
-    setTimeout(fixGoogleSearch.bind({ timeout: 0 }), 0)
+    setTimeout(fixGoogleSearch.bind({ timeout: 500 }), 500)
     setTimeout(fixGoogleSearch.bind({ timeout: 1000 }), 1000)
   }
   if (IS_GOOGLE && window.location.pathname.includes("/preferences")) {
-    setTimeout(fixGooglePreferences.bind({ timeout: 0 }), 0)
+    setTimeout(fixGooglePreferences.bind({ timeout: 500 }), 500)
     setTimeout(fixGooglePreferences.bind({ timeout: 1000 }), 1000)
   }
 
